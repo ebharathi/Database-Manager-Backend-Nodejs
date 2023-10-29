@@ -1,5 +1,4 @@
 const Router=require('express').Router();
-const e = require('express');
 const {signup,login,createTable,dropTable,getUserData,getTableData,addRow,deleteRow}=require('../sql')
 
 

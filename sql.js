@@ -1,15 +1,21 @@
 const { query } = require('express');
 const {Pool}=require('pg')
 
+// const pool=new Pool(
+//         {
+//         host:'127.0.0.1',
+//         user:'postgres',
+//         database:'Database_Manager',
+//         password:'elaya55555',
+//         port:5432
+//     }
+// )
 const pool=new Pool(
-        {
-        host:'127.0.0.1',
-        user:'postgres',
-        database:'Database_Manager',
-        password:'elaya55555',
-        port:5432
+    {
+      connectionString:process.env.DB_URL
+    //   connectionString:'postgresql://postgres:5LE9WXSNEElkJLkyNonT@containers-us-west-37.railway.app:7969/railway'
     }
-)
+  )
 
 const signup=async(name,email,pass)=>{
     const client=await pool.connect();

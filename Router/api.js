@@ -1,5 +1,5 @@
 const Router=require('express').Router();
-const {signup,login,createTable}=require('../sql')
+const {signup,login,createTable,dropTable,getUserData}=require('../sql')
 
 
 Router.post('/signup',async(req,res)=>{
@@ -71,6 +71,51 @@ Router.post('/table/create',async(req,res)=>{
         })
     } catch (error) {
          console.log("Error")
+         res.json({
+            error:true,
+            message:error.message
+         })
+    }
+})
+Router.get('/api/user/:id/table/remove/:name',async(req,res)=>{
+    try {
+          await dropTable(req.params.id,req.params.name)
+          .then((resp)=>{
+             if(resp.error==false)
+              res.json({
+                    error:false,
+                    messgae:"Table deleted successfully!"
+                })
+             else
+               res.json({
+                error:true,
+                message:resp.message
+             })
+          })
+    } catch (error) {
+         res.json({
+            error:true,
+            message:error.message
+         })
+    } 
+})
+Router.get('/user/details/:id',async(req,res)=>{
+    try {
+         await getUserData(req.params.id)
+         .then((resp)=>{
+             if(resp.error==false)
+              res.json({
+                error:false,
+                data:resp.data
+            })
+            else
+              res.json({
+               error:true,
+               message:resp.message
+            })
+         })
+    } catch (error) {
+         console.log("err")
          res.json({
             error:true,
             message:error.message

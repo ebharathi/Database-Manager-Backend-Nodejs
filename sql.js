@@ -146,4 +146,45 @@ const getTableData=async(name)=>{
         console.log("DISCONNECTED");
     }
 }
-module.exports={signup,login,createTable,dropTable,getUserData,getTableData}
+const addRow=async(text)=>{
+    const client=await pool.connect()
+    console.log("CONNECTED");
+    console.log("qq-->",text)
+    try {
+        await client.query(text)
+        return {
+            error:false
+        }
+    } catch (error) {
+        console.log("ERROR in row insertion")
+        console.log(error.message)
+        return {
+            error:true,
+            message:error.message
+        }
+    }
+    finally{
+      await client.release();
+      console.log("DISCONNECTED");
+    }
+}
+const deleteRow=async(text)=>{
+    const client=await pool.connect();
+    console.log("CONNECTED")
+    try {
+        await client.query(text)
+        return {
+            error:false
+        }
+    } catch (error) {
+        return {
+            error:true,
+            message:error.message
+        }
+    }
+    finally{
+        client.release()
+        console.log("DISCONNECTED")
+    }
+}
+module.exports={signup,login,createTable,dropTable,getUserData,getTableData,addRow,deleteRow}

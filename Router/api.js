@@ -1,6 +1,6 @@
 const Router=require('express').Router();
 const e = require('express');
-const {signup,login,createTable,dropTable,getUserData,getTableData}=require('../sql')
+const {signup,login,createTable,dropTable,getUserData,getTableData,addRow,deleteRow}=require('../sql')
 
 
 Router.post('/signup',async(req,res)=>{
@@ -147,5 +147,50 @@ Router.get('/table/get/:name',async(req,res)=>{
             message:error.message
         })
     }
+})
+Router.post('/table/add/row',async(req,res)=>{
+  try {
+     await addRow(req.body.query)
+     .then((resp)=>{
+      if(resp.error==false)
+       res.json({
+        error:false,
+        message:"New row inserted"
+      })
+      else
+        res.json({
+         error:true,
+         message:"Failed to insert"
+        })
+     })
+  } catch (error) {
+     res.json({
+      error:true,
+      message:error.message
+     })
+  }
+})
+Router.post('/table/remove/row',async(req,res)=>{
+  try {
+    // console.log("delete")
+      await deleteRow(req.body.query)
+      .then((resp)=>{
+        if(resp.error==false)
+         res.json({
+          error:false,
+          message:"Row deleted!"
+        })
+        else
+         res.json({
+           error:true,
+           message:resp.message
+        })
+      })
+  } catch (error) {
+      res.json({
+        error:true,
+        message:"Failed to remove the row!"
+      })
+  }
 })
 module.exports={Router}

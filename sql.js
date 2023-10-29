@@ -124,4 +124,26 @@ const getUserData=async(id)=>{
         console.log("DISCONNECTED")
     }
 }
-module.exports={signup,login,createTable,dropTable,getUserData}
+const getTableData=async(name)=>{
+    const client=await pool.connect();
+    console.log("[+]CONNECTED");
+    try {
+        let text=`SELECT * FROM ${name}`
+        const result=await client.query(text);
+        return {
+            error:false,
+            data:result
+        }
+    } catch (error) {
+        console.log("err in getting tbale")
+        return {
+            error:true,
+            message:error.message
+        }
+    }
+    finally{
+        await client.release();
+        console.log("DISCONNECTED");
+    }
+}
+module.exports={signup,login,createTable,dropTable,getUserData,getTableData}

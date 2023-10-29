@@ -1,5 +1,6 @@
 const Router=require('express').Router();
-const {signup,login,createTable,dropTable,getUserData}=require('../sql')
+const e = require('express');
+const {signup,login,createTable,dropTable,getUserData,getTableData}=require('../sql')
 
 
 Router.post('/signup',async(req,res)=>{
@@ -120,6 +121,31 @@ Router.get('/user/details/:id',async(req,res)=>{
             error:true,
             message:error.message
          })
+    }
+})
+Router.get('/table/get/:name',async(req,res)=>{
+    try {
+        await getTableData(req.params.name)
+        .then((resp)=>{
+            if(resp.error==false)
+            {
+              res.json({
+                error:false,
+                data:resp.data
+              })
+            }
+            else
+              res.json({
+                error:true,
+                message:resp.message
+                })
+        })
+    } catch (error) {
+        console.log("ERROR")
+        res.json({
+            error:true,
+            message:error.message
+        })
     }
 })
 module.exports={Router}

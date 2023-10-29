@@ -15,7 +15,7 @@ const signup=async(name,email,pass)=>{
     const client=await pool.connect();
     console.log("CONNECTED") 
     try {
-          const result=await client.query('INSERT INTO users(name,email,password) VALUES($1,$2,$3) RETURNING id',[name,email,pass])
+          const result=await client.query('INSERT INTO db_users(name,email,password) VALUES($1,$2,$3) RETURNING id',[name,email,pass])
           return {
             error:false,
             userId:result.rows[0].id
@@ -35,7 +35,7 @@ const login=async(email,pass)=>{
     const client=await pool.connect();
     console.log("CONNECTED")
     try {
-        const result=await client.query('SELECT * FROM users WHERE email=$1 AND password=$2',[email,pass])
+        const result=await client.query('SELECT * FROM db_users WHERE email=$1 AND password=$2',[email,pass])
         return {
             error:false,
             userId:result.rows[0].id
@@ -54,7 +54,7 @@ const login=async(email,pass)=>{
 const createTable=async(creator,name,cols)=>{
     const client=await pool.connect();
     try {
-        let userText=`user_id INT REFERENCES users(id) DEFAULT ${creator}`
+        let userText=`user_id INT REFERENCES db_users(id) DEFAULT ${creator}`
         let colsText=''
         cols.map((s,index)=>{
            if(index!=cols.length-1) 
@@ -65,7 +65,7 @@ const createTable=async(creator,name,cols)=>{
         let text=`CREATE TABLE ${name}(${userText},${colsText})`
         console.log(text)
         const result=await client.query(text)
-        const updateTableQuery=await client.query('UPDATE users SET created_tables=ARRAY_APPEND(created_tables,$1) WHERE id=$2',[name,creator])
+        const updateTableQuery=await client.query('UPDATE db_users SET created_tables=ARRAY_APPEND(created_tables,$1) WHERE id=$2',[name,creator])
         return {
             error:false,
             message:`${name} table created`
@@ -88,7 +88,7 @@ const dropTable=async(userId,name)=>{
     try {
         let text=`DROP TABLE ${name}`
         await client.query(text)
-        await client.query('UPDATE users SET created_tables=ARRAY_REMOVE(created_tables,$1) WHERE id=$2',[name,userId])
+        await client.query('UPDATE db_users SET created_tables=ARRAY_REMOVE(created_tables,$1) WHERE id=$2',[name,userId])
         return {
             error:false
         }
@@ -107,7 +107,7 @@ const getUserData=async(id)=>{
     const client=await pool.connect();
     console.log("CONNECTED")
     try {
-        const result=await client.query('SELECT * FROM users WHERE id=$1',[id])
+        const result=await client.query('SELECT * FROM db_users WHERE id=$1',[id])
         return {
             error:false,
             data:result.rows[0]
